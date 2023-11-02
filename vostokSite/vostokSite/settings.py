@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-_36p)n%vr)c(gpc%28d9(f3hartf6ddmru*sy9^h*zk@3&v^hb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.localhost']
+ALLOWED_HOSTS = ['.localhost', '.127.0.0.1', '.postgres']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'main'
 ]
 
 MIDDLEWARE = [
@@ -79,8 +80,8 @@ DATABASES = {
         'NAME': 'vostokSite',
         'USER': 'admin',
         'PASSWORD': 'root',
-        'HOST': 'postgres',
-        'PORT': '5432',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
