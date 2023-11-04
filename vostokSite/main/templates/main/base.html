@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="{% static 'images/logo_zl.png' %}" rel="icon" />
+
+    <link rel="stylesheet" href="{% static 'styles/bootstrap.min.css' %}" />
+
+    <link rel="stylesheet" href="{% static 'vendor/font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/index.css' %}" />
+
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body class="wrapper">
+    <div class="content">
+        <!-- HEADER -->
+        <header class="header">
+            <a href="https://xn--90ahped2as3e1a.xn--p1ai/">
+                <img class="header_img" src="{% static 'images/logo_oc.png' %}" alt="" />
+            </a>
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a href="#participants" class="nav-link scrollto active">Участники</a></li>
+                    <li><a href="#partners" class="nav-link scrollto">Партнёры</a></li>
+                    <li><a href="#contacts" class="nav-link scrollto">Контакты</a></li>
+                </ul>
+            </nav>
+            <a href="https://xn--90ahped2as3e1a.xn--p1ai/">
+                <img class="header_img1" src="{% static 'images/logo_zl1.png' %}" alt="" />
+            </a>
+        </header>
+        <!-- MAIN -->
+        <div class="main">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <svg class="hero-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28 " preserveAspectRatio="none">
+            <defs>
+                <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z">
+            </defs>
+            <g class="wave1">
+                <use xlink:href="#wave-path" x="50" y="3" fill="rgba(255,255,255, .1)">
+            </g>
+            <g class="wave2">
+                <use xlink:href="#wave-path" x="50" y="0" fill="rgba(255,255,255, .2)">
+            </g>
+            <g class="wave3">
+                <use xlink:href="#wave-path" x="50" y="9" fill="#6cbe45">
+            </g>
+        </svg>
+        <div class="footer_container">
+            <div class="footer-social-link">
+                <ul>
+                    <li>
+                        <a href="https://vk.com/okean_tc" target="_blank">
+                            <i class="fa fa-vk"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.instagram.com/okean_tc" target="_blank">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer_contacts">
+                <a href="tel: +79039299039" target="_blank" class="footer_phone">
+                    +7 (903) 929-90-39
+                </a>
+                <p class="footer_contacts_text">Телефон горячей линии</p>
+            </div>
+            <a href="https://okean-tc.ru/politika.php" target="_blank" class="footer-policy">Политика
+                конфиденциальности</a>
+        </div>
+    </footer>
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+</body>
+
+</html>
