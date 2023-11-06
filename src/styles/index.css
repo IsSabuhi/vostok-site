@@ -1,0 +1,25 @@
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto',Arial,sans-serif;
+  height: 100vh;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(169, 169, 169, 0.3);
+  border-radius: 20px;
+}
+
+#root {
+  height: inherit;
+}
