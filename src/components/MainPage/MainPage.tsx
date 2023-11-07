@@ -24,8 +24,7 @@ const MainPage = () => {
             textAlign: 'center',
           }}
         >
-          Карта <br />
-          "Клуб семья"
+          Акция
         </Text>
         <Image src={formImg} alt='' />
       </div>
