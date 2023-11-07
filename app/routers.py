@@ -1,57 +1,45 @@
-from fastapi import APIRouter, Depends,Request,Response, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import crud
 from database import get_db
-from model import Participants
-from schemas import ParticipantsSchema, CouponSchema
+from schemas import ParticipantsSchema
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__) 
 
 user_router = APIRouter()
 
-# Список участников розыгрыша
-user = []
-
-# Список купонов
-coupons = []
-
 @user_router.post("/registration", tags=['Participants'])
 async def add_participants(participants: ParticipantsSchema, db: Session = Depends(get_db)):
-    try:
-        new_participant = crud.create_participant(db, participants)
+        new_participant = crud.create_participant(db, participants, participants.coupon_number)
+        print(new_participant)
+        participant_data = {
+            'id': new_participant.participants_id,
+            'coupon_number': new_participant.coupons,
+            'participants_name': new_participant.participants_name,
+            'participants_surname': new_participant.participants_surname,
+        }
+        print(participant_data)
         return {"message": "Участник успешно зарегистрировался", "participant": new_participant}
-    except ValueError as e:
-        print(f'Ошибка при регистрации участника: {e}')
-        return {"message": str(e)}
-
-    #  async with db.transaction():
-    #     query = text("SELECT id FROM coupons WHERE coupon_number = :coupon_number AND is_used = 0")
-    #     coupon = await db.fetch_one(query, values={"coupon_number": Participants.coupon_number})
-    #     if coupon:
-    #         participant_db = Participants(**Participants.dict())
-    #         participant_db.coupon_id = coupon["id"]
-    #         db.add(participant_db)
-    #         db.commit()
-    #         db.refresh(participant_db)
-    #         db.close()
-    #         query = text("UPDATE coupons SET is_used = 1 WHERE id = :coupon_id")
-    #         await db.execute(query, values={"coupon_id": coupon["id"]})
-    #         return {"message": "Участник успешно зарегистрировался"}
-    #     else:
-    #         raise HTTPException(status_code=400, detail="Купон не найден или уже использован")
-
 
 @user_router.get("/Get_participants", name='Получить всех участников', tags=['Participants'])
 def Get_participants(db: Session = Depends(get_db)):
     participants = crud.get_participant(db)
     return participants
 
+@user_router.get("/Get_participants_coupons", name='Получить данные промежуточной таблицы', tags=['Participants_Coupons'])
+def Get_participants_coupons(db: Session = Depends(get_db)):
+    get_participants_coupons = crud.get_participants_coupons(db)
+    return get_participants_coupons
+
 
 @user_router.post("/Create_coupon",  name='Создать купон', tags=['Coupons'])
-def add_coupon(coupon_number: str, db: Session = Depends(get_db)):
-    coupon = crud.create_coupon(db, coupon_number)
-    if not coupon:
-        raise HTTPException(status_code=400, detail="Купон с таким номером уже существует.")
+def add_coupon(coupon_number: str, is_used: bool = False, db: Session = Depends(get_db)):
+    coupon = crud.create_coupon(db, coupon_number, is_used)
+    if coupon is None:
+        raise HTTPException(status_code=400, detail="Купон с таким номером уже существует")
     return coupon
-
 
 @user_router.get("/Get_coupons", name='Получить все купоны', tags=['Coupons'])
 def Get_coupons(db: Session = Depends(get_db)):
