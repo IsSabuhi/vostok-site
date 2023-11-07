@@ -33,7 +33,11 @@ const FooterComponent = () => {
           Телефон горячей линии
         </Text>
       </div>
-      <Link href='https://okean-tc.ru/politika.php' className={styles.policy}>
+      <Link
+        href='https://okean-tc.ru/politika.php'
+        target='_blank'
+        className={styles.policy}
+      >
         Политика конфиденциальности
       </Link>
     </div>
