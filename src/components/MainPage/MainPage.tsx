@@ -5,7 +5,7 @@ import zlLogo from '../../assets/images/logo_zl.png';
 import FormComponent from '../FormComponent/FormComponent';
 import iconCheck from '../../assets/icons/check.svg';
 
-const main_text = [
+export const main_text = [
   {
     icon: iconCheck,
     title: 'Регистрируйся для участия',
@@ -26,6 +26,7 @@ const MainPage = () => {
       <div className={styles.header}>
         <div className={styles.header_title}>
           <Heading
+            className={styles.title}
             sx={{
               color: '#fff',
               fontSize: '50px',
@@ -49,32 +50,13 @@ const MainPage = () => {
       </div>
       <div className={styles.form_container}>
         <div className={styles.logoBlock}>
-          <Image src={oceanLogo} alt='' />
-          <Image src={zlLogo} alt='' />
+          <div className={styles.logo_img}>
+            <Image src={oceanLogo} alt='' />
+            <Image src={zlLogo} alt='' />
+          </div>
         </div>
         <FormComponent />
       </div>
-
-      {/* <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Text
-          sx={{
-            color: '#333',
-            fontSize: '40px',
-            fontWeight: '600',
-            letterSpacing: '1.5px',
-            textAlign: 'center',
-          }}
-        >
-          Акция
-        </Text>
-        <Image src={formImg} alt='' />
-      </div> */}
     </div>
   );
 };

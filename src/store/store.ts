@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-interface Participant {
+export interface Participant {
     participants_id: number;
     participants_name: string;
     participants_surname: string;

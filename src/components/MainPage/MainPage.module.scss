@@ -9,7 +9,16 @@
     padding-inline: 10px;
     padding-bottom: 20px;
     height: 100%;
-    
+
+    @media (max-width: 900px) {
+        width: 100%;
+    }
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 15px;
+    }
+
     .logoBlock {
        position: absolute;
        top: 0;
@@ -24,6 +33,20 @@
         & img:last-child {
             position: absolute;
             top: 50%;
+
+            @media (max-width: 900px) {
+                position: relative;
+            }
+        }
+
+        .logo_img {
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+
+            @media (max-width: 600px) {
+                flex-direction: column;
+            }
         }
     }
 }
@@ -43,6 +66,25 @@
     padding: 10px 20px 30px 70px;
     border-bottom-right-radius: 120px;
     border-bottom-left-radius: 10px;
+
+     @media (max-width: 960px) {
+        padding: 10px 20px 30px 20px;
+    }
+
+    .title {
+        color: #fff;
+        font-size: 50px;
+        font-style: normal;
+        font-weight: 900;
+
+         @media (max-width: 768px) {
+            font-size: 42px;
+        }
+
+        @media (max-width: 600px) {
+            font-size: 32px;
+        }
+    }
 }
 
 .header_text {
@@ -53,6 +95,10 @@
     gap: 20px;
     height: 100%;
     place-content: center;
+
+    @media (max-width: 600px) {
+        display: none;
+    }
 }
 
 .item_card {
@@ -71,4 +117,8 @@
 
 .form_container {
     padding-top: 60px;
+
+    @media (max-width: 600px) {
+        padding-top: 0;
+    }
 }

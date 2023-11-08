@@ -4,15 +4,21 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 90px;
     background: #6cbe45;
-    padding-inline: 20px; 
+    padding: 20px;
+    
+    @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 20px;
+    }
 
     .social_network {
         display: flex;
         flex-direction: row;
         gap: 10px;
     }
+
+    
 
     .social_network_link {
         display: flex;
