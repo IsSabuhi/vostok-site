@@ -1,4 +1,4 @@
-import { Image, Text, Heading } from '@chakra-ui/react';
+import { Image, Text, Heading, Link } from '@chakra-ui/react';
 import styles from './MainPage.module.scss';
 import oceanLogo from '../../assets/images/logo_ocean.png';
 import zlLogo from '../../assets/images/logo_zl.png';
@@ -16,7 +16,7 @@ export const main_text = [
   },
   {
     icon: iconCheck,
-    title: 'Выиграй супер призы',
+    title: 'Розыгрыш подарочных карт каждую неделю',
   },
 ];
 
@@ -49,11 +49,13 @@ const MainPage = () => {
         </div>
       </div>
       <div className={styles.form_container}>
-        <div className={styles.logoBlock}>
-          <div className={styles.logo_img}>
-            <Image src={oceanLogo} alt='' />
-            <Image src={zlLogo} alt='' />
-          </div>
+        <div className={styles.logo_img}>
+          <Link href='/'>
+            <Image src={oceanLogo} alt='Логотип' />
+          </Link>
+          <Link href='/'>
+            <Image src={zlLogo} alt='Логотип' />
+          </Link>
         </div>
         <FormComponent />
       </div>

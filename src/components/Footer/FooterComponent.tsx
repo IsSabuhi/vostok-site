@@ -1,13 +1,12 @@
 import styles from './FooterComponent.module.scss';
-import { Text, Link } from '@chakra-ui/react';
-import { FaInstagram } from 'react-icons/fa';
-import { SlSocialVkontakte } from 'react-icons/sl';
+import { Text, Link, Image } from '@chakra-ui/react';
+import telegramImg from '../../assets/images/telegramLink.png';
 
 const FooterComponent = () => {
   return (
     <div className={styles.container}>
       <div className={styles.social_network}>
-        <Link
+        {/* <Link
           href='https://www.instagram.com/okean_tc'
           className={styles.social_network_link}
         >
@@ -18,7 +17,18 @@ const FooterComponent = () => {
           className={styles.social_network_link}
         >
           <SlSocialVkontakte size={25} />
+        </Link> */}
+        <Link
+          href='https://t.me/okean_tc'
+          target='_blank'
+          className={styles.telegramImg_link}
+        >
+          <Image src={telegramImg} alt='' />
         </Link>
+        <div className={styles.text_img}>
+          <Text className={styles.social_text}>Наш телеграмм канал</Text>
+          <Text className={styles.social_text}>@OKEAN_TC</Text>
+        </div>
       </div>
 
       <div className={styles.phone_number}>
@@ -29,7 +39,7 @@ const FooterComponent = () => {
         >
           +7 (903) 929-90-39
         </Link>
-        <Text sx={{ padding: '0', margin: '0', color: '#fff' }}>
+        <Text className={styles.phone_number_text_desc}>
           Телефон горячей линии
         </Text>
       </div>

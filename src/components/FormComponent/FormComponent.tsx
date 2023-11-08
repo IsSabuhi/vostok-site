@@ -42,7 +42,7 @@ const FormComponent = () => {
 
         const updateParticipantsList = async () => {
           const response = await axios.get(
-            'http://127.0.0.1:8000/Get_participants'
+            'http://127.0.0.1:8000/GetParicipantsCoupons'
           );
           const data = response.data;
           setParticipants(data);
@@ -58,7 +58,7 @@ const FormComponent = () => {
       }
     },
   });
-  console.log(error);
+
   return (
     <form className={styles.container} onSubmit={formik.handleSubmit}>
       <Text className={styles.container_title}>Регистрация</Text>

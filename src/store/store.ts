@@ -6,7 +6,7 @@ export interface Participant {
     participants_surname: string;
     participants_middleName: string
     phone: number;
-    coupon_number: string;
+    coupons: string[];
 }
 
 interface ParticipantState {
