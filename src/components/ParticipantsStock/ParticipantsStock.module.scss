@@ -1,5 +1,11 @@
 .container {
-    
+    width: 90%;
+}
+
+.container_tables {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .table {

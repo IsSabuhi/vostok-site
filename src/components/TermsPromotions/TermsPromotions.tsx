@@ -58,15 +58,6 @@ const TermsPromotions = () => {
             </div>
           </div>
         </div>
-        {/* <div className={styles.main_images}>
-          <div className={styles.top_img}>
-            <Image src={giftCard2} alt='' />
-            <Image src={giftCard1} alt='' />
-          </div>
-          <div className={styles.bottom_img}>
-            <Image src={giftCard11} alt='' />
-          </div>
-        </div> */}
       </div>
     </div>
   );

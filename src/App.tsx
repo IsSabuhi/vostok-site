@@ -1,28 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import FooterComponent from './components/Footer/FooterComponent';
 import './styles/App.scss';
 import MainPage from './components/MainPage/MainPage';
-import { Heading } from '@chakra-ui/react';
-import axios from 'axios';
 import useParticipantStore from './store/store';
-import { formatName } from './utils/formatName';
-import RegistrationCard from './components/RegistrationCard/RegistrationCard';
 import TermsPromotions from './components/TermsPromotions/TermsPromotions';
 import ParticipantsStock from './components/ParticipantsStock/ParticipantsStock';
-
-// const participants = [
-//   { name: 'Федорова В.' },
-//   { name: 'Илькина Г.' },
-//   { name: 'Мельников С.' },
-//   { name: 'Казаков М.' },
-//   { name: 'Воронин А.' },
-//   { name: 'Кузнецов Н.' },
-//   { name: 'Лебедева Е.' },
-// ];
+import axios from 'axios';
+import config from './configs';
 
 function App() {
-  const { participants } = useParticipantStore();
+  const { participants, setParticipants } = useParticipantStore();
+
+  useEffect(() => {
+    axios
+      .get(`${config.apiUrl}/GetParicipantsCoupons`)
+      .then((response) => {
+        const data = response.data;
+        setParticipants(data);
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          return;
+        }
+        console.error('Произошла ошибка при выполнении запроса:', error);
+      });
+  }, [setParticipants]);
+
   console.log(participants);
+
   return (
     <div className='container'>
       <div className='main'>
@@ -38,7 +43,7 @@ function App() {
           <MainPage />
         </div>
 
-        <ParticipantsStock />
+        {participants.length !== 0 && <ParticipantsStock />}
 
         <TermsPromotions />
       </div>

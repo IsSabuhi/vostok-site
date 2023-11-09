@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import styles from './FormComponent.module.scss';
 import { Text, Input, FormControl, FormLabel, Button } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import axios, { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import useParticipantStore from '../../store/store';
+import config from '../../configs';
 
 type FormParticipants = {
   participants_name: string;
@@ -23,8 +23,6 @@ const initialFormParticipants: FormParticipants = {
 };
 
 const FormComponent = () => {
-  const [error, setError] = useState();
-
   const { setParticipants } = useParticipantStore();
 
   const formik = useFormik({
@@ -33,7 +31,7 @@ const FormComponent = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          'http://127.0.0.1:8000/registration',
+          `${config.apiUrl}/registration`,
           values
         );
         console.log('Успешно:', response.data);
@@ -42,7 +40,7 @@ const FormComponent = () => {
 
         const updateParticipantsList = async () => {
           const response = await axios.get(
-            'http://127.0.0.1:8000/GetParicipantsCoupons'
+            `${config.apiUrl}/GetParicipantsCoupons`
           );
           const data = response.data;
           setParticipants(data);
@@ -53,7 +51,6 @@ const FormComponent = () => {
         if (axiosError.response) {
           const errorMessage = axiosError.response.data.detail;
           toast.error(errorMessage);
-          setError(errorMessage);
         }
       }
     },

@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import config from '../../configs';
 import type { ApiRequestOptions } from './ApiRequestOptions';
 
 type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;
@@ -20,7 +21,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-    BASE: 'http://127.0.0.1:8000/openapi.json',
+    BASE: `${config.apiUrl}/openapi.json`,
     VERSION: '0.1',
     WITH_CREDENTIALS: false,
     CREDENTIALS: 'include',

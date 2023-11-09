@@ -93,26 +93,37 @@
         transform: rotate(345deg);
         margin-right: 50px;
         margin-top: 30px;
+        transition: transform 0.5s;
+
+        &:hover {
+          transform: scale(1.1) rotate3d(1, 1, 1, 345deg);
+          transition: 0.5s;
+        }
       }
 
       .giftCard1 {
         margin-left: auto;
+        transition: transform 0.5s;
+
+        &:hover {
+          transform: scale(1.1);
+          transition: 0.5s;
+        }
       }
     }
   }
 
   .main_list {
     list-style: none;
-    font-family: "Lucida Sans";
+    // font-family: "Lucida Sans";
   }
 
   .main_list li {
     position: relative;
     padding: 5px 0 10px 25px;
     color: #333;
-    font-variant: small-caps;
-    font-weight: bold;
-    cursor: pointer;
+    font-weight: 500;
+    // cursor: pointer;
   }
 
   .main_list li:before {
@@ -162,18 +173,21 @@
       transform: rotate(18deg);
       margin-right: 10px;
       margin-bottom: 30px;
+
+      transition: transform 0.5s;
+
+      &:hover {
+        transform: scale(1.1) rotate3d(1, 1, 1, 18deg);
+        transition: 0.5s;
+      }
     }
   }
 
   .main_stars {
 
     & p {
+      font-size: 14px;
       color: #333;
     }
-  }
-
-  .main_images {
-
-
   }
 }
