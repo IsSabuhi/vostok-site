@@ -4,6 +4,7 @@ import crud
 from database import get_db
 from schemas import ParticipantsSchema
 import logging
+from model import Participants
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__) 
@@ -28,9 +29,14 @@ def Get_participants(db: Session = Depends(get_db)):
     participants = crud.get_participant(db)
     return participants
 
-@user_router.get("/Get_participants_coupons", name='Получить данные промежуточной таблицы', tags=['Participants_Coupons'])
-def Get_participants_coupons(db: Session = Depends(get_db)):
-    get_participants_coupons = crud.get_participants_coupons(db)
+@user_router.get("/GetParicipantsCoupons")
+def GetParicipantsCoupons(db: Session = Depends(get_db)):
+    participants_with_coupons = crud.get_participants_with_coupons(db)
+    return participants_with_coupons
+
+@user_router.get("/GetParicipantsCouponsID", name='Получить данные промежуточной таблицы', tags=['Participants_Coupons'])
+def Get_participants_coupons_id(db: Session = Depends(get_db)):
+    get_participants_coupons = crud.get_participants_coupons_id(db)
     return get_participants_coupons
 
 

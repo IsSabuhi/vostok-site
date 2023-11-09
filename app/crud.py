@@ -44,10 +44,26 @@ def get_participant(db: Session):
     participants = db.query(Participants).all()
     return [participant.__dict__ for participant in participants]
 
-def get_participants_coupons(db: Session): 
+def get_participants_coupons_id(db: Session): 
     participants_coupons = db.query(ParticipantsCoupons).all()
     return [participant_coupon.__dict__ for participant_coupon in participants_coupons]
 
+def get_participants_with_coupons(db: Session):
+    participants = db.query(Participants).all()
+
+    participants_with_coupons = []
+    for participant in participants:
+        coupons = [coupon.coupon_number for coupon in participant.coupons]
+        participant_data = {
+            "participant_id": participant.participants_id,
+            "participants_name": participant.participants_name,
+            "participants_surname": participant.participants_surname,
+            "participants_middleName": participant.participants_middleName,
+            "phone": participant.phone,
+            "coupons": coupons
+        }
+        participants_with_coupons.append(participant_data)
+    return participants_with_coupons
 
 # КУПОНЫ
 def create_coupon(db: Session, coupon_number: str, is_used: bool):

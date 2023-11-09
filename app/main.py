@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from routers import user_router
 from database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,5 +28,8 @@ app.add_middleware(
 
 app.include_router(router=user_router)
 
+HOST = os.getenv("HOST", "192.168.50.69")
+PORT = int(os.getenv("PORT", 8000))
+
 if __name__ == "__main__":
-    run('main:app', host='127.0.0.1', port=8000)
+    run('main:app', host=HOST, port=PORT)

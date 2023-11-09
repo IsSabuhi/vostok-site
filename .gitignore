@@ -1,2 +1,4 @@
 vsvenv
 __pycache__
+
+.env
