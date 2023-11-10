@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from model import Participants, Coupon, ParticipantsCoupons
+from model import Participants, Coupon, ParticipantsCoupons, Winners
 from schemas import ParticipantsSchema
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -65,7 +65,7 @@ def get_participants_with_coupons(db: Session):
         participants_with_coupons.append(participant_data)
     return participants_with_coupons
 
-# КУПОНЫ
+# Купоны
 def create_coupon(db: Session, coupon_number: str, is_used: bool):
     existing_coupon = db.query(Coupon).filter(Coupon.coupon_number == coupon_number).first()
     if existing_coupon:
@@ -98,3 +98,57 @@ def get_coupons(db: Session):
     coupons = db.query(Coupon).all()
     return [coupon.__dict__ for coupon in coupons]
 
+# Победители
+def select_winner(db: Session, coupon_number: str):
+    coupon = db.query(Coupon).filter(Coupon.coupon_number == coupon_number).first()
+
+    if coupon:
+        participant_coupon = db.query(ParticipantsCoupons).filter(ParticipantsCoupons.coupon_id == coupon.coupon_id).first()
+
+        if participant_coupon:
+            participant_coupon.is_winner = True
+
+            existing_winner = db.query(Winners).filter(Winners.participants_coupons_id == participant_coupon.participants_coupons_id).first()
+
+            if not existing_winner:
+                winner = Winners(participants_coupons_id=participant_coupon.participants_coupons_id)
+                db.add(winner)
+                db.commit()
+                return {"message": "Победитель выбран успешно."}
+            else:
+                raise HTTPException(status_code=404, detail="Победитель уже выбран для данного купона.")
+        else:
+            raise HTTPException(status_code=404, detail="Участник не найден по данному купону.")
+    else:
+        raise HTTPException(status_code=404, detail="Купон не найден.")
+
+def get_all_winners(db: Session):
+    winners_data = []
+    winners = db.query(Winners).filter(Winners.participants_coupons_id != None).all()
+
+    for winner in winners:
+        participants_coupons_id = winner.participants_coupons_id
+        participant_coupon = db.query(ParticipantsCoupons).filter(ParticipantsCoupons.participants_coupons_id == participants_coupons_id).first()
+
+        if participant_coupon:
+            participant_data = participant_coupon  
+
+            participant_id = participant_data.participants_id
+            participant = db.query(Participants).filter(Participants.participants_id == participant_id).first()
+
+            coupon_id = participant_coupon.coupon_id
+            coupon = db.query(Coupon).filter(Coupon.coupon_id == coupon_id).first()
+
+            participant_dict = {key: value for key, value in participant.__dict__.items() if key != '_sa_instance_state'}
+            coupon_dict = {key: value for key, value in coupon.__dict__.items() if key != '_sa_instance_state'}
+
+            winner_data = {
+                "winner_id": winner.winner_id,
+                "win_date": winner.win_date,
+                "participant": participant_dict,
+                "coupon": coupon_dict,
+                "is_winner": participant_coupon.is_winner
+            }
+
+            winners_data.append(winner_data)
+    return winners_data

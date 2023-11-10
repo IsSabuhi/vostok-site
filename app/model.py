@@ -11,12 +11,6 @@ class Coupon(Base):
     is_used = Column(Boolean, default=False)
     participants = relationship("Participants", secondary="ParticipantsCoupons", back_populates='coupons')
 
-class ParticipantsCoupons(Base):
-    __tablename__ = "ParticipantsCoupons"
-
-    participants_id = Column(Integer, ForeignKey('Participants.participants_id'), primary_key=True)
-    coupon_id = Column(Integer, ForeignKey("Coupons.coupon_id"), unique=True, primary_key=True)
-
 class Participants(Base):
     __tablename__ = "Participants"
 
@@ -27,9 +21,17 @@ class Participants(Base):
     phone = Column(BigInteger, index=True, unique=True, nullable=False)
     coupons = relationship("Coupon", secondary="ParticipantsCoupons", back_populates='participants')
     
-class Winner(Base):
+class ParticipantsCoupons(Base):
+    __tablename__ = "ParticipantsCoupons"
+
+    participants_coupons_id = Column(Integer, primary_key=True, index=True, unique=True)
+    participants_id = Column(Integer, ForeignKey('Participants.participants_id'))
+    coupon_id = Column(Integer, ForeignKey("Coupons.coupon_id"))
+    is_winner = Column(Boolean, default=False)
+
+class Winners(Base):
     __tablename__ = "Winners"
 
     winner_id = Column(Integer, primary_key=True, index=True)
-    participant_id = Column(Integer, ForeignKey("Participants.participants_id"))
+    participants_coupons_id = Column(Integer, ForeignKey("ParticipantsCoupons.participants_coupons_id"), unique=True)
     win_date = Column(DateTime, default=datetime.now)
