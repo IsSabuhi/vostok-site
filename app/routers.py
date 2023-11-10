@@ -53,9 +53,28 @@ def get_winners(db: Session = Depends(get_db)):
 @user_router.get("/GetParicipantsCoupons", name='Получить участников и купоны', tags=['Participants_Coupons'])
 def GetParicipantsCoupons(db: Session = Depends(get_db)):
     participants_with_coupons = crud.get_participants_with_coupons(db)
-    count = len(participants_with_coupons)
-    headers = {"Content-Range": f"items 0-{count-1}/{count}"}
-    return JSONResponse(content=participants_with_coupons, headers=headers)
+
+    count = sum(len(participant["coupons"]) for participant in participants_with_coupons)
+    index = 0
+    formatted_data = []
+
+    for participant in participants_with_coupons:
+        participant_id = participant["participant_id"]
+        for coupon_number in participant["coupons"]:
+            index += 1
+            coupon_data = {
+                "id": index,  
+                "participant_id": participant_id,
+                "participants_name": participant["participants_name"],
+                "participants_surname": participant["participants_surname"],
+                "participants_middleName": participant["participants_middleName"],
+                "phone": participant["phone"],
+                "coupon_number": coupon_number
+            }
+            formatted_data.append(coupon_data)
+
+    headers = {"Content-Range": f"items 0-{index-1}/{index}"}
+    return JSONResponse(content=formatted_data, headers=headers)
 
 @user_router.get("/GetParicipantsCouponsID", name='Получить данные промежуточной таблицы', tags=['Participants_Coupons'])
 def Get_participants_coupons_id(db: Session = Depends(get_db)):
