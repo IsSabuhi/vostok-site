@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import crud
@@ -50,25 +50,32 @@ def select_winner_route(coupon_number: str, db: Session = Depends(get_db)):
 def get_winners(db: Session = Depends(get_db)):
     return crud.get_all_winners(db)
 
-@user_router.get("/GetParicipantsCoupons", name='Получить участников и купоны', tags=['Participants_Coupons'])
+@user_router.get("/GetParicipantsCoupons_front")
 def GetParicipantsCoupons(db: Session = Depends(get_db)):
+    participants_with_coupons = crud.get_participants_coupons_front(db)
+    return participants_with_coupons
+
+@user_router.get("/GetParicipantsCoupons")
+def GetParicipantsCoupons(q: str = Query(None), db: Session = Depends(get_db)):
     participants_with_coupons = crud.get_participants_with_coupons(db)
 
-    count = sum(len(participant["coupons"]) for participant in participants_with_coupons)
+    if q:
+        participants_with_coupons = [participant for participant in participants_with_coupons if "coupon_number" in participant and q.lower() in participant["coupon_number"].lower()]
+
     index = 0
     formatted_data = []
 
     for participant in participants_with_coupons:
         participant_id = participant["participant_id"]
-        for coupon_number in participant["coupons"]:
+        for coupon_number in participant.get("coupons", []):
             index += 1
             coupon_data = {
-                "id": index,  
+                "id": index,
                 "participant_id": participant_id,
-                "participants_name": participant["participants_name"],
-                "participants_surname": participant["participants_surname"],
-                "participants_middleName": participant["participants_middleName"],
-                "phone": participant["phone"],
+                "participants_name": participant.get("participants_name", ""),
+                "participants_surname": participant.get("participants_surname", ""),
+                "participants_middleName": participant.get("participants_middleName", ""),
+                "phone": participant.get("phone", ""),
                 "coupon_number": coupon_number
             }
             formatted_data.append(coupon_data)
@@ -76,7 +83,7 @@ def GetParicipantsCoupons(db: Session = Depends(get_db)):
     headers = {"Content-Range": f"items 0-{index-1}/{index}"}
     return JSONResponse(content=formatted_data, headers=headers)
 
-@user_router.get("/GetParicipantsCouponsID", name='Получить данные промежуточной таблицы', tags=['Participants_Coupons'])
+@user_router.get("/GetParicipantsCouponsID")
 def Get_participants_coupons_id(db: Session = Depends(get_db)):
     get_participants_coupons = crud.get_participants_coupons_id(db)
     return get_participants_coupons

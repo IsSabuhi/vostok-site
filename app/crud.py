@@ -48,6 +48,23 @@ def get_participants_coupons_id(db: Session):
     participants_coupons = db.query(ParticipantsCoupons).all()
     return [participant_coupon.__dict__ for participant_coupon in participants_coupons]
 
+def get_participants_coupons_front(db: Session):
+    participants = db.query(Participants).all()
+
+    participants_with_coupons = []
+    for participant in participants:
+        coupons = [coupon.coupon_number for coupon in participant.coupons]
+        participant_data = {
+            "participant_id": participant.participants_id,
+            "participants_name": participant.participants_name,
+            "participants_surname": participant.participants_surname,
+            "participants_middleName": participant.participants_middleName,
+            "phone": participant.phone,
+            "coupons": coupons
+        }
+        participants_with_coupons.append(participant_data)
+    return participants_with_coupons
+
 def get_participants_with_coupons(db: Session):
     participants = db.query(Participants).all()
 
@@ -147,7 +164,8 @@ def get_all_winners(db: Session):
                 "win_date": winner.win_date,
                 "participant": participant_dict,
                 "coupon": coupon_dict,
-                "is_winner": participant_coupon.is_winner
+                "is_winner": participant_coupon.is_winner,
+                "winner_id": winner.win_date,
             }
 
             winners_data.append(winner_data)
