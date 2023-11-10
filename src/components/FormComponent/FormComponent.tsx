@@ -40,7 +40,7 @@ const FormComponent = () => {
 
         const updateParticipantsList = async () => {
           const response = await axios.get(
-            `${config.apiUrl}/GetParicipantsCoupons`
+            `${config.apiUrl}/GetParicipantsCoupons_front`
           );
           const data = response.data;
           setParticipants(data);
