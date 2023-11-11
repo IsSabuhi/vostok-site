@@ -34,7 +34,7 @@ const FormComponent = () => {
           `${config.apiUrl}/registration`,
           values
         );
-        console.log('Успешно:', response.data);
+        console.log(response)
         toast.success('Регистрация выполнена успешно');
         formik.resetForm();
 

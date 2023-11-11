@@ -42,7 +42,7 @@ const ParticipantsStock = () => {
         if (axios.isCancel(error)) {
           return;
         }
-        console.error('Произошла ошибка при выполнении запроса:', error);
+        // console.error('Произошла ошибка при выполнении запроса:', error);
       });
   }, [setParticipants]);
 
@@ -57,7 +57,7 @@ const ParticipantsStock = () => {
         if (axios.isCancel(error)) {
           return;
         }
-        console.error('Произошла ошибка при выполнении запроса:', error);
+        // console.error('Произошла ошибка при выполнении запроса:', error);
       });
   }, [setWinner]);
 
@@ -113,7 +113,7 @@ const ParticipantsStock = () => {
             </tbody>
           </table>
         )}
-        {winner?.length !== 0 && participants?.length !== undefined && (
+        {winner?.length !== 0 && winner?.length !== undefined && (
           <Heading
             as='h2'
             size='lg'
