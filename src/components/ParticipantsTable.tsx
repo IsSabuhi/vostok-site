@@ -8,6 +8,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, TextField, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
+import * as XLSX from 'xlsx';
 
 interface Participant {
   id: number;
@@ -55,6 +56,13 @@ const ParticipantsTable: React.FC = () => {
     searchTerm ? participant.coupon_number === searchTerm : true
   );
 
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(participants);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
+    XLSX.writeFile(workbook, 'Участники.xlsx');
+  };
+
   return (
     <div
       style={{
@@ -65,18 +73,30 @@ const ParticipantsTable: React.FC = () => {
         gap: '20px',
       }}
     >
-      <Search>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          type='text'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder='Номер купона'
-          inputProps={{ 'aria-label': 'search' }}
-        />
-      </Search>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase
+            type='text'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder='Номер купона'
+            inputProps={{ 'aria-label': 'search' }}
+          />
+        </Search>
+        <Button variant='contained' onClick={exportToExcel}>
+          Экспорт в Excel
+        </Button>
+      </div>
 
       {participants.length > 0 && filteredParticipants.length > 0 ? (
         <DataGrid
@@ -94,6 +114,7 @@ const ParticipantsTable: React.FC = () => {
           <Typography>Нет участников</Typography>
         </div>
       )}
+
       <div>
         <WinnerSelectionForm />
       </div>
@@ -153,7 +174,6 @@ const Search = styled('div')(({ theme }) => ({
   'marginLeft': 0,
   'width': '100%',
   [theme.breakpoints.up('sm')]: {
-    marginLeft: 'auto',
     width: 'auto',
   },
 }));
