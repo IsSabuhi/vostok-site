@@ -1,58 +1,49 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface AuthFormData {
+interface AuthData {
   username: string;
   password: string;
 }
 
 const useAuth = () => {
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [isAuthenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedLoggedIn = localStorage.getItem('isLoggedIn');
-    if (storedLoggedIn === 'true') {
-      setLoggedIn(true);
+    const storedAuth = localStorage.getItem('isAuthenticated');
+    if (storedAuth) {
+      setAuthenticated(true);
     }
   }, []);
 
-  const login = (formData: AuthFormData) => {
-    const { username, password } = formData;
-    const isValidCredentials = username === 'admin' && password === 'admin';
+  const login = (credentials: AuthData) => {
+    const isValidCredentials =
+      credentials.username === 'admin' && credentials.password === 'admin';
 
     if (isValidCredentials) {
-      setLoggedIn(true);
-      localStorage.setItem('isLoggedIn', 'true');
-      setSuccess(true);
-      navigate('admin');
+      localStorage.setItem('isAuthenticated', 'true');
+      setAuthenticated(true);
+      navigate('/admin');
       setError(null);
     } else {
-      setLoggedIn(false);
-      localStorage.removeItem('isLoggedIn');
-      setError('Неверные учетные данные.');
-      setSuccess(false);
+      setError('Неверные имя пользователя или пароль');
+      setAuthenticated(false);
     }
   };
 
   const logout = () => {
-    setLoggedIn(false);
-    localStorage.removeItem('isLoggedIn');
-  };
-
-  const isAuthenticated = () => {
-    return isLoggedIn || localStorage.getItem('isLoggedIn') === 'true';
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+    setAuthenticated(false);
   };
 
   return {
+    isAuthenticated,
     login,
     logout,
-    isAuthenticated,
     error,
-    success,
   };
 };
 

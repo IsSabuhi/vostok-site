@@ -1,12 +1,13 @@
 // src/ParticipantsTable.tsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import config from '../configs';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, TextField, Typography } from '@mui/material';
+import { toast } from 'react-toastify';
 
 interface Participant {
   id: number;
@@ -30,10 +31,11 @@ const ParticipantsTable: React.FC = () => {
         const data = response.data;
         setParticipants(data);
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return;
+        const axiosError = error as AxiosError<any>;
+        if (axiosError.response) {
+          const errorMessage = axiosError.response.data.detail;
+          toast.error(errorMessage);
         }
-        console.error('Произошла ошибка при выполнении запроса:', error);
       }
     };
 
@@ -52,10 +54,6 @@ const ParticipantsTable: React.FC = () => {
   const filteredParticipants = participants.filter((participant) =>
     searchTerm ? participant.coupon_number === searchTerm : true
   );
-
-  const handleSelectWinner = async (couponNumber: string) => {
-    console.log(couponNumber);
-  };
 
   return (
     <div
@@ -84,7 +82,6 @@ const ParticipantsTable: React.FC = () => {
         <DataGrid
           rows={filteredParticipants}
           columns={columns}
-          checkboxSelection
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },
@@ -94,25 +91,33 @@ const ParticipantsTable: React.FC = () => {
         />
       ) : (
         <div style={{ textAlign: 'center', color: 'red' }}>
-          <p>Нет участников</p>
+          <Typography>Нет участников</Typography>
         </div>
       )}
       <div>
-        <WinnerSelectionForm onSelectWinner={handleSelectWinner} />
+        <WinnerSelectionForm />
       </div>
     </div>
   );
 };
 
-const WinnerSelectionForm = ({
-  onSelectWinner,
-}: {
-  onSelectWinner: (couponNumber: string) => void;
-}) => {
-  const [couponNumber, setCouponNumber] = useState('');
+const WinnerSelectionForm = () => {
+  const [coupon_number, setCouponNumber] = useState('');
 
-  const handleSelectWinner = () => {
-    onSelectWinner(couponNumber);
+  const handleSelectWinner = async () => {
+    try {
+      await axios.post(
+        `${config.apiUrl}/Select_winner?coupon_number=${coupon_number}`
+      );
+      toast.success('Победитель выбран успешно.');
+    } catch (error) {
+      const axiosError = error as AxiosError<any>;
+      if (axiosError.response) {
+        const errorMessage = axiosError.response.data.detail;
+        toast.error(errorMessage);
+      }
+      console.error('Произошла ошибка при выборе победителя:', error);
+    }
   };
 
   return (
@@ -121,7 +126,7 @@ const WinnerSelectionForm = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <TextField
           type='text'
-          value={couponNumber}
+          value={coupon_number}
           onChange={(e) => setCouponNumber(e.target.value)}
           placeholder='Введите номер купона'
           inputProps={{ 'aria-label': 'coupon-number' }}
