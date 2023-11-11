@@ -14,9 +14,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Button, Container, Tab, Tabs } from '@mui/material';
 import ParticipantsTable from '../ParticipantsTable';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
-import Coupons from '../Coupons';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import useAuth from '../../hook/use-auth';
+import Winners from '../Winners';
 
 const drawerWidth = 240;
 
@@ -173,8 +173,8 @@ const Sidebar = ({ onLogout }: { onLogout: () => void }) => {
               {...a11yProps(0)}
             />
             <Tab
-              label={open && 'Купоны'}
-              icon={<ConfirmationNumberIcon />}
+              label={open && 'Победители'}
+              icon={<EmojiEventsIcon />}
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -206,7 +206,7 @@ const Sidebar = ({ onLogout }: { onLogout: () => void }) => {
             <ParticipantsTable />
           </TabPanel>
           <TabPanel value={selectedTab} index={1}>
-            <Coupons />
+            <Winners />
           </TabPanel>
         </Container>
       </Box>
