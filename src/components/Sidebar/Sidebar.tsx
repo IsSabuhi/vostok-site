@@ -13,8 +13,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Button, Container, Tab, Tabs } from '@mui/material';
 import ParticipantsTable from '../ParticipantsTable';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import WinnerTable from '../Coupons';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import Coupons from '../Coupons';
