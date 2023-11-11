@@ -55,6 +55,10 @@ def GetParicipantsCoupons(db: Session = Depends(get_db)):
     participants_with_coupons = crud.get_participants_coupons_front(db)
     return participants_with_coupons
 
+@user_router.get('/Get_winner_adminJSON', name='Получить победителей для админки')
+def get_winners(db: Session = Depends(get_db)):
+    return crud.get_all_winners_admin(db)
+
 @user_router.get("/GetParicipantsCoupons")
 def GetParicipantsCoupons(q: str = Query(None), db: Session = Depends(get_db)):
     participants_with_coupons = crud.get_participants_with_coupons(db)

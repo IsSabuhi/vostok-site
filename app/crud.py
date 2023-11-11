@@ -170,3 +170,38 @@ def get_all_winners(db: Session):
 
             winners_data.append(winner_data)
     return winners_data
+
+def get_all_winners_admin(db: Session):
+    winners_data = []
+    winners = db.query(Winners).filter(Winners.participants_coupons_id != None).all()
+
+    for winner in winners:
+        participants_coupons_id = winner.participants_coupons_id
+        participant_coupon = db.query(ParticipantsCoupons).filter(ParticipantsCoupons.participants_coupons_id == participants_coupons_id).first()
+
+        if participant_coupon:
+            participant_data = participant_coupon  
+
+            participant_id = participant_data.participants_id
+            participant = db.query(Participants).filter(Participants.participants_id == participant_id).first()
+
+            coupon_id = participant_coupon.coupon_id
+            coupon = db.query(Coupon).filter(Coupon.coupon_id == coupon_id).first()
+
+            winner_data = {
+                "winner_id": winner.winner_id,
+                "win_date": winner.win_date,
+                "participant_id": participant.participants_id,
+                "participants_name": participant.participants_name,
+                "participants_middleName": participant.participants_middleName,
+                "participants_surname": participant.participants_surname,
+                "phone": participant.phone,
+                "coupon_id": coupon.coupon_id,
+                "coupon_number": coupon.coupon_number,
+                "is_used": coupon.is_used,
+                "is_winner": participant_coupon.is_winner,
+            }
+
+            winners_data.append(winner_data)
+    return winners_data
+
