@@ -16,6 +16,13 @@ app = FastAPI(
 origins = [
     "*",
     "http://localhost:3000",
+    "http://0.0.0.0",
+    "http://127.0.0.1",
+    'http://79.174.80.125/',
+    'https://79.174.80.125:3000/',
+    'http://xn--90ahped2as3e1a.xn--p1ai/kupon/',
+    'http://xn--90ahped2as3e1a.xn--p1ai/',
+    'http://host.docker.internal',
     "http://192.168.50.69:3000",
     "http://10.66.29.127:3000",
     'http://192.168.50.69:5173',
@@ -35,8 +42,8 @@ app.add_middleware(
 
 app.include_router(router=user_router)
 
-HOST = os.getenv("HOST", "192.168.50.69")
-PORT = int(os.getenv("PORT", 8000))
+# HOST = os.getenv("HOST", "192.168.50.69")
+# PORT = int(os.getenv("PORT", 8000))
 
-if __name__ == "__main__":
-    run('main:app', host=HOST, port=PORT)
+# if __name__ == "__main__":
+#     run('main:app', host=HOST, port=PORT)

@@ -1,20 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+DATABASE_USER = 'postgres'
+DATABASE_PASSWORD = 'root'
+DATABASE_HOST = 'localhost'
+DATABASE_NAME = 'vostokSite_db'
 
-DATABASE_USER = os.getenv("DATABASE_USER")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DATABASE_HOST = os.getenv("DATABASE_HOST")
-DATABASE_NAME = os.getenv("DATABASE_NAME")
-
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}"
+# DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}"
 
 # Для докера
-# DATABASE_URL = "postgresql://postgres:root@host.docker.internal/vostokdbTest"
+DATABASE_URL = "postgresql://postgres:root@host.docker.internal/vostokSite_db"
 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()

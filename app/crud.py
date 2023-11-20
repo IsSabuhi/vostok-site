@@ -3,6 +3,7 @@ from model import Participants, Coupon, ParticipantsCoupons, Winners
 from schemas import ParticipantsSchema
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
+import pandas as pd
 
 def create_participant(db: Session, participant: ParticipantsSchema, coupon_number: str):
     if not coupon_verification(db, coupon_number):
@@ -204,4 +205,3 @@ def get_all_winners_admin(db: Session):
 
             winners_data.append(winner_data)
     return winners_data
-

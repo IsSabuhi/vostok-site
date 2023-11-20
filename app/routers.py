@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import crud
 from database import get_db
 from schemas import ParticipantsSchema
 import logging
+import pandas as pd
+from model import Coupon
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__) 
@@ -91,3 +93,22 @@ def GetParicipantsCoupons(q: str = Query(None), db: Session = Depends(get_db)):
 def Get_participants_coupons_id(db: Session = Depends(get_db)):
     get_participants_coupons = crud.get_participants_coupons_id(db)
     return get_participants_coupons
+
+@user_router.get("/uploadCoupon")
+async def upload_coupons(db: Session = Depends(get_db)):
+    try:
+        excel_file_path = "купоны.xlsx"
+        df = pd.read_excel(excel_file_path, header=None, names=["coupon_number"])
+
+        coupons_data = df.to_dict(orient="records")
+
+        for coupon_data in coupons_data:
+            db_coupon = Coupon(**coupon_data)
+            db.add(db_coupon)
+        db.commit()
+
+        return {"message": "Купоны успешно добавлены в базу данных."}
+
+    except Exception as e:
+        return HTTPException(status_code=500, detail=str(e))
+
