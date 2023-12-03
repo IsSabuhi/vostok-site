@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import crud
@@ -52,7 +52,11 @@ def select_winner_route(coupon_number: str, db: Session = Depends(get_db)):
 def get_winners(db: Session = Depends(get_db)):
     return crud.get_all_winners(db)
 
-@user_router.get("/GetParicipantsCoupons_front")
+@user_router.get('/Get_winner_front', name='Получить победителей', tags=['front'])
+def get_winners(db: Session = Depends(get_db)):
+    return crud.get_all_winners_front(db)
+
+@user_router.get("/GetParicipantsCoupons_front", tags=['front'])
 def GetParicipantsCoupons(db: Session = Depends(get_db)):
     participants_with_coupons = crud.get_participants_coupons_front(db)
     return participants_with_coupons
@@ -95,20 +99,25 @@ def Get_participants_coupons_id(db: Session = Depends(get_db)):
     return get_participants_coupons
 
 @user_router.get("/uploadCoupon")
-async def upload_coupons(db: Session = Depends(get_db)):
+async def add_coupons(chunk_size: int = 2000, db: Session = Depends(get_db)):
     try:
-        excel_file_path = "купоны.xlsx"
-        df = pd.read_excel(excel_file_path, header=None, names=["coupon_number"])
+        # Чтение номеров купонов из эксель
+        excel_path = "купоны1.xlsx" 
+        coupons_df = pd.read_excel(excel_path, header=None, names=["coupon_number"])
 
-        coupons_data = df.to_dict(orient="records")
+        # Добавление номеров купонов в базу данных порциями
+        for i in range(0, len(coupons_df), chunk_size):
+            chunk = coupons_df.iloc[i:i + chunk_size]
+            coupons = [Coupon(coupon_number=row["coupon_number"]) for _, row in chunk.iterrows()]
+            db.bulk_save_objects(coupons)
 
-        for coupon_data in coupons_data:
-            db_coupon = Coupon(**coupon_data)
-            db.add(db_coupon)
         db.commit()
-
-        return {"message": "Купоны успешно добавлены в базу данных."}
+        return {"message": "Coupons added successfully"}
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
+
+@user_router.post("/")
+def updateNull(db: Session = Depends(get_db)):
+    crud.update_null_dates(db)

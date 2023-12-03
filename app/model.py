@@ -28,6 +28,7 @@ class ParticipantsCoupons(Base):
     participants_id = Column(Integer, ForeignKey('Participants.participants_id'))
     coupon_id = Column(Integer, ForeignKey("Coupons.coupon_id"))
     is_winner = Column(Boolean, default=False)
+    date = Column(DateTime, default=datetime.now)
 
 class Winners(Base):
     __tablename__ = "Winners"

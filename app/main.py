@@ -1,8 +1,9 @@
 from uvicorn import run
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from routers import user_router
 from database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,7 +28,8 @@ origins = [
     'http://192.168.50.69:5173',
     'http://192.168.50.69',
     'http://172.24.0.1:5173',
-    'http://192.168.50.69:5173'
+    'http://192.168.50.69:5173',
+    'http://79.174.80.125'
 ]
 
 app.add_middleware(
@@ -40,3 +42,7 @@ app.add_middleware(
 )
 
 app.include_router(router=user_router)
+
+
+if __name__ == "__main__":
+    run('main:app', host='127.0.0.1', port=8081)

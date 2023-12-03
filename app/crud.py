@@ -3,7 +3,8 @@ from model import Participants, Coupon, ParticipantsCoupons, Winners
 from schemas import ParticipantsSchema
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
-import pandas as pd
+from datetime import datetime, timedelta
+from sqlalchemy.sql.expression import func
 
 def create_participant(db: Session, participant: ParticipantsSchema, coupon_number: str):
     if not coupon_verification(db, coupon_number):
@@ -50,20 +51,31 @@ def get_participants_coupons_id(db: Session):
     return [participant_coupon.__dict__ for participant_coupon in participants_coupons]
 
 def get_participants_coupons_front(db: Session):
-    participants = db.query(Participants).all()
+    latest_win_date = (
+        db.query(func.max(Winners.win_date))
+        .scalar()
+    )
+
+    participants = (
+        db.query(Participants, ParticipantsCoupons, Coupon)
+        .join(ParticipantsCoupons, ParticipantsCoupons.participants_id == Participants.participants_id)
+        .join(Coupon, Coupon.coupon_id == ParticipantsCoupons.coupon_id)
+        .filter(
+            ParticipantsCoupons.date > latest_win_date,
+        )
+        .all()
+    )
 
     participants_with_coupons = []
-    for participant in participants:
-        coupons = [coupon.coupon_number for coupon in participant.coupons]
+    for participant, coupon in participants:
         participant_data = {
             "participant_id": participant.participants_id,
             "participants_name": participant.participants_name,
             "participants_surname": participant.participants_surname,
-            "participants_middleName": participant.participants_middleName,
-            "phone": participant.phone,
-            "coupons": coupons
+            "coupons": [coupon.coupon_number],
         }
         participants_with_coupons.append(participant_data)
+
     return participants_with_coupons
 
 def get_participants_with_coupons(db: Session):
@@ -172,6 +184,38 @@ def get_all_winners(db: Session):
             winners_data.append(winner_data)
     return winners_data
 
+def get_all_winners_front(db: Session):
+    winners_data = []
+    winners = db.query(Winners).filter(Winners.participants_coupons_id != None).all()
+
+    for winner in winners:
+        participants_coupons_id = winner.participants_coupons_id
+        participant_coupon = db.query(ParticipantsCoupons).filter(ParticipantsCoupons.participants_coupons_id == participants_coupons_id).first()
+        
+        if participant_coupon:
+            participant_data = participant_coupon  
+
+            participant_id = participant_data.participants_id
+            participant = db.query(Participants).filter(Participants.participants_id == participant_id).first()
+
+            coupon_id = participant_coupon.coupon_id
+            coupon = db.query(Coupon).filter(Coupon.coupon_id == coupon_id).first()
+
+            winner_data = {
+                "winner_id": winner.winner_id,
+                "win_date": winner.win_date,
+                "participant_id": participant.participants_id,
+                "participants_name": participant.participants_name,
+                "participants_surname": participant.participants_surname,
+                "coupon_id": coupon.coupon_id,
+                "coupon_number": coupon.coupon_number,
+                "is_used": coupon.is_used,
+                "is_winner": participant_coupon.is_winner,
+            }
+
+            winners_data.append(winner_data)
+    return winners_data
+
 def get_all_winners_admin(db: Session):
     winners_data = []
     winners = db.query(Winners).filter(Winners.participants_coupons_id != None).all()
@@ -205,3 +249,18 @@ def get_all_winners_admin(db: Session):
 
             winners_data.append(winner_data)
     return winners_data
+
+
+def update_null_dates(db: Session):
+    try:
+        null_date_records = db.query(ParticipantsCoupons).filter(ParticipantsCoupons.date.is_(None)).all()
+
+        for record in null_date_records:
+            record.date = datetime(2023, 11, 27)
+
+        db.commit()
+        return {"message": "Null dates updated successfully."}
+
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
