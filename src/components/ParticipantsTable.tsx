@@ -1,12 +1,12 @@
 // src/ParticipantsTable.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import config from '../configs';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, CircularProgress, TextField, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
 
@@ -23,6 +23,8 @@ const ParticipantsTable: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
@@ -31,11 +33,13 @@ const ParticipantsTable: React.FC = () => {
         );
         const data = response.data;
         setParticipants(data);
+        setLoading(false)
       } catch (error) {
         const axiosError = error as AxiosError<any>;
         if (axiosError.response) {
           const errorMessage = axiosError.response.data.detail;
           toast.error(errorMessage);
+          setLoading(false);
         }
       }
     };
@@ -45,11 +49,11 @@ const ParticipantsTable: React.FC = () => {
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'participants_name', headerName: 'Имя', width: 130 },
-    { field: 'participants_surname', headerName: 'Фамилия', width: 130 },
-    { field: 'participants_middleName', headerName: 'Отчество', width: 130 },
-    { field: 'phone', headerName: 'Телефон', width: 130 },
-    { field: 'coupon_number', headerName: 'Номер купона', width: 130 },
+    { field: 'participants_name', headerName: 'Имя', width: 140 },
+    { field: 'participants_surname', headerName: 'Фамилия', width: 140 },
+    { field: 'participants_middleName', headerName: 'Отчество', width: 140 },
+    { field: 'phone', headerName: 'Телефон', width: 140 },
+    { field: 'coupon_number', headerName: 'Номер купона', width: 140 },
   ];
 
   const filteredParticipants = participants.filter((participant) =>
@@ -107,14 +111,15 @@ const ParticipantsTable: React.FC = () => {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[5, 10, 15, 20]}
         />
       ) : (
         <div style={{ textAlign: 'center', color: 'red' }}>
-          <Typography>Нет участников</Typography>
+         {loading && <CircularProgress />}
+          {/* <Typography>Нет участников</Typography> */}
         </div>
       )}
-
+     
       <div>
         <WinnerSelectionForm />
       </div>

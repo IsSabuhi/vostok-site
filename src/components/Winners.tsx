@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import config from '../configs';
 import { toast } from 'react-toastify';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { formatDateString } from '../utils/formatDateString';
 import * as XLSX from 'xlsx';
 
@@ -24,25 +24,31 @@ interface Winner {
 const Winners = () => {
   const [winners, setWinners] = useState<Winner[]>([]);
 
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const fetchParticipants = async () => {
+    const fetchWinners = async () => {
       try {
         const response = await axios.get(
           `${config.apiUrl}/Get_winner_adminJSON`
         );
         const data = response.data;
         setWinners(data);
+        setLoading(false)
       } catch (error) {
         const axiosError = error as AxiosError<any>;
         if (axiosError.response) {
           const errorMessage = axiosError.response.data.detail;
           toast.error(errorMessage);
+          setError(errorMessage);
         }
         console.error('Произошла ошибка при выполнении запроса:', error);
+        setLoading(false);
       }
     };
 
-    fetchParticipants();
+    fetchWinners();
   }, []);
 
   const columns: GridColDef[] = [
@@ -86,24 +92,30 @@ const Winners = () => {
       >
         Экспорт в Excel
       </Button>
-      {winners.length > 0 ? (
-        <>
-          <DataGrid
-            rows={winners}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
-            }}
-            pageSizeOptions={[5, 10, 20]}
-            getRowId={getRowId}
-          />
-        </>
-      ) : (
+      {loading ? (
+        <div style={{textAlign: 'center', width: '100%'}}>
+        <CircularProgress />
+        </div>
+      ) : error ? (
+        <div style={{ textAlign: 'center', color: 'red' }}>
+          <p>{error}</p>
+        </div>
+      ) : winners.length === 0 ? (
         <div style={{ textAlign: 'center', color: 'red' }}>
           <p>Нет победителей</p>
         </div>
+      ) : (
+        <DataGrid
+          rows={winners}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10, 20]}
+          getRowId={getRowId}
+        />
       )}
     </div>
   );
