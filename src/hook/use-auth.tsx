@@ -20,8 +20,8 @@ const useAuth = () => {
 
   const login = (credentials: AuthData) => {
     const isValidCredentials =
-      credentials.username === 'east' &&
-      credentials.password === 'Ghjuhfvvf123';
+      credentials.username === 'Admin' &&
+      credentials.password === 'A2IHZNW1jKcJQuf@lVRi!';
 
     if (isValidCredentials) {
       localStorage.setItem('isAuthenticated', 'true');
