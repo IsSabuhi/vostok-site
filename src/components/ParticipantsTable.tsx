@@ -16,24 +16,29 @@ interface Participant {
   participants_surname: string;
   participants_middleName: string;
   phone: number;
-  coupon_number: string;
+  coupons: string[];
 }
 
 const ParticipantsTable: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+
+  const [pLoading, setPLoading] = useState(false);
+
+  // Кеширование данных
+  const cachedParticipants = useMemo(() => participants, [participants]);
 
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
         const response = await axios.get(
-          `${config.apiUrl}/GetParicipantsCoupons`
+          `${config.apiUrl}/GetParicipantsCoupons_admin`
         );
         const data = response.data;
         setParticipants(data);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         const axiosError = error as AxiosError<any>;
         if (axiosError.response) {
@@ -53,18 +58,60 @@ const ParticipantsTable: React.FC = () => {
     { field: 'participants_surname', headerName: 'Фамилия', width: 140 },
     { field: 'participants_middleName', headerName: 'Отчество', width: 140 },
     { field: 'phone', headerName: 'Телефон', width: 140 },
-    { field: 'coupon_number', headerName: 'Номер купона', width: 140 },
+    {
+      field: 'coupons',
+      headerName: 'Номера купонов',
+      width: 200,
+      renderCell: (params) => (
+        <div>{(params.value as string[]).join(', ')}</div>
+      ),
+    },
   ];
 
-  const filteredParticipants = participants.filter((participant) =>
-    searchTerm ? participant.coupon_number === searchTerm : true
+  const filteredParticipants = cachedParticipants.filter((participant) =>
+    searchTerm ? participant.coupons.includes(searchTerm) : true
   );
 
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(participants);
+    const dataToExport = participants.map((participant) => ({
+      id: participant.id,
+      participants_name: participant.participants_name,
+      participants_surname: participant.participants_surname,
+      participants_middleName: participant.participants_middleName,
+      phone: participant.phone,
+      coupon_number: participant.coupons.join(', '),
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
     XLSX.writeFile(workbook, 'Участники.xlsx');
+  };
+
+  const handleDownloadParticipantsCoupons = async () => {
+    try {
+      setPLoading(true);
+      const response = await axios.get(
+        `${config.apiUrl}/GetParicipantsCoupons`
+      );
+      const data = response.data;
+      const dataToExport = data.map((participant: any) => ({
+        id: participant.id,
+        participants_name: participant.participants_name,
+        participants_surname: participant.participants_surname,
+        participants_middleName: participant.participants_middleName,
+        phone: participant.phone,
+        coupon_number: participant.coupon_number,
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
+      XLSX.writeFile(workbook, 'Все_участники_акции.xlsx');
+    } catch (error) {
+      console.error('Ошибка при скачивании данных:', error);
+    } finally {
+      setPLoading(false);
+    }
   };
 
   return (
@@ -75,16 +122,14 @@ const ParticipantsTable: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
-      }}
-    >
+      }}>
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
@@ -97,15 +142,34 @@ const ParticipantsTable: React.FC = () => {
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
-        <Button variant='contained' onClick={exportToExcel}>
-          Экспорт в Excel
-        </Button>
+        <div
+          style={{
+            width: '100%',
+            height: '30px',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          {pLoading ? (
+            <CircularProgress />
+          ) : (
+            <Button
+              variant='contained'
+              onClick={handleDownloadParticipantsCoupons}>
+              Экспорт в Excel всех участников
+            </Button>
+          )}
+          <Button variant='contained' onClick={exportToExcel}>
+            Экспорт в Excel
+          </Button>
+        </div>
       </div>
 
       {participants.length > 0 && filteredParticipants.length > 0 ? (
         <DataGrid
           rows={filteredParticipants}
           columns={columns}
+          getRowId={(row) => row.participant_id}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 5 },
@@ -115,11 +179,11 @@ const ParticipantsTable: React.FC = () => {
         />
       ) : (
         <div style={{ textAlign: 'center', color: 'red' }}>
-         {loading && <CircularProgress />}
+          {loading && <CircularProgress />}
           {/* <Typography>Нет участников</Typography> */}
         </div>
       )}
-     
+
       <div>
         <WinnerSelectionForm />
       </div>
@@ -160,8 +224,7 @@ const WinnerSelectionForm = () => {
         <Button
           variant='contained'
           color='primary'
-          onClick={handleSelectWinner}
-        >
+          onClick={handleSelectWinner}>
           <Typography>Выбрать победителя</Typography>
         </Button>
       </div>
