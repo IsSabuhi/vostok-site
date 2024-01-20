@@ -12,4 +12,4 @@ RUN npm install -g serve
 
 EXPOSE 85
 
-CMD ["serve", "-s", "build", "-l", "85"]
+CMD ["serve", "-s", "build", "-l", "3000"]
